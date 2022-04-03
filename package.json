@@ -2,10 +2,23 @@
   "name": "simple-mongo-express-endpoints",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test.unit": "jest -c tests/jest.config.unit.js",
+    "test.integration": "jest -c tests/jest.config.integration.js",
+    "test": "npm run test.unit && npm run test.integration"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^8.12.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.4",
+    "express": "^4.17.3",
+    "jest": "^27.5.1",
+    "mongoose": "^6.2.9"
+  },
+  "dependencies": {
+    "mongo-sanitize": "^1.1.0"
+  }
 }
