@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "test.unit": "jest -c tests/jest.config.unit.js",
-    "test.integration": "jest -c tests/jest.config.integration.js",
+    "test.integration": "jest -c tests/jest.config.integration.js --runInBand",
     "test": "npm run test.unit && npm run test.integration"
   },
   "author": "",
@@ -16,7 +16,9 @@
     "eslint-plugin-import": "^2.25.4",
     "express": "^4.17.3",
     "jest": "^27.5.1",
-    "mongoose": "^6.2.9"
+    "mongoose": "^6.2.9",
+    "ramda": "^0.28.0",
+    "supertest": "^6.2.2"
   },
   "dependencies": {
     "mongo-sanitize": "^1.1.0"

@@ -1,13 +1,14 @@
 const createModel = require('./createModel');
+const createRouter = require('./createRouter');
 
-const SMEE = (name, schema, mongoose) => {
-  const model = createModel(name, schema, mongoose);
+const SMEE = (name, schema, mongoose, wantedEndpoints, express) => {
+  const Model = createModel(name, schema, mongoose);
+  const router = createRouter(wantedEndpoints, express, Model);
 
   return {
-    model,
+    Model,
+    router,
   };
 };
 
-module.exports = {
-  SMEE,
-};
+module.exports = SMEE;

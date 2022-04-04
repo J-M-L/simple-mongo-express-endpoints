@@ -8,8 +8,13 @@ const endpoints = {
   getAll: {
     name: 'getAll',
     handler: (Model) => async (req, res) => {
-      const items = await Model.find({}).lean();
-      return res.json(items);
+      try {
+        const items = await Model.find({}).lean();
+        return res.json(items);
+      } catch (err) {
+        console.log(err);
+        return res.status(500).send();
+      }
     },
     pathExtension: '/',
     type: 'get',
@@ -17,13 +22,17 @@ const endpoints = {
   get: {
     name: 'get',
     handler: (Model) => async (req, res) => {
-      const id = sanitize(req.params.id);
-      validateIdOrThrow(id);
+      try {
+        const id = sanitize(req.params.id);
+        validateIdOrThrow(id);
 
-      const items = await Model.findById(id).lean();
-      return res.json(items);
+        const items = await Model.findById(id).lean();
+        return res.json(items);
+      } catch (err) {
+        return res.status(400).json(err.message);
+      }
     },
-    pathExtension: '/',
+    pathExtension: '/:id',
     type: 'get',
   },
   add: {
@@ -78,6 +87,16 @@ const endpoints = {
     },
     pathExtension: '/:id',
     type: 'put',
+  },
+  delete: {
+    name: 'delete',
+    handler: (Model) => async (req, res) => {
+      const id = sanitize(req.params.id);
+      await Model.findByIdAndDelete(id);
+      return res.status(204).end();
+    },
+    pathExtension: '/:id',
+    type: 'delete',
   },
 };
 
