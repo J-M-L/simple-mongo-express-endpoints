@@ -39,8 +39,7 @@ describe('SimpleMongoExpressEndpoints', () => {
     });
     it('should return error when getting malformed id', async () => {
       const { body } = await apiHandler.get('/api/test/notexisting').expect(400);
-
-      console.log(body);
+      expect(body).toMatchObject({ message: 'Invalid ObjectId', name: 'ValidationError' });
     });
   });
 
@@ -71,6 +70,11 @@ describe('SimpleMongoExpressEndpoints', () => {
       const { body: getResult2 } = await apiHandler.get(`/api/test/${body._id}`).expect(200);
       expect(R.pick(['name', 'otherValue'], getResult2)).toMatchObject({ name: data.name, otherValue: newValue.otherValue });
     });
+
+    it('should return error with malformed id', async () => {
+      const { body } = await apiHandler.patch('/api/test/notExisting').send({}).expect(400);
+      expect(body).toMatchObject({ message: 'Invalid ObjectId', name: 'ValidationError' });
+    });
   });
 
   describe('replace', () => {
@@ -87,6 +91,11 @@ describe('SimpleMongoExpressEndpoints', () => {
       const { body: getResult2 } = await apiHandler.get(`/api/test/${body._id}`).expect(200);
       expect(R.pick(['name', 'otherValue'], getResult2)).toMatchObject(newObject);
     });
+
+    it('should return error with malformed id', async () => {
+      const { body } = await apiHandler.put('/api/test/notExisting').send({}).expect(400);
+      expect(body).toMatchObject({ message: 'Invalid ObjectId', name: 'ValidationError' });
+    });
   });
 
   describe('delete', () => {
@@ -101,6 +110,11 @@ describe('SimpleMongoExpressEndpoints', () => {
 
       const { body: getResult2 } = await apiHandler.get('/api/test/').expect(200);
       expect(getResult2.length).toBe(0);
+    });
+
+    it('should return error with malformed id', async () => {
+      const { body } = await apiHandler.delete('/api/test/notExisting').send({}).expect(400);
+      expect(body).toMatchObject({ message: 'Invalid ObjectId', name: 'ValidationError' });
     });
   });
 });

@@ -15,9 +15,9 @@ app.use('/api/test', SMEE(
   express,
 ).router);
 
-app.use('/api/other', SMEE(
+app.use('/api/validation', SMEE(
   'other',
-  { name: String, otherValue: Number },
+  { name: String, otherValue: { type: Number, min: 1, max: 2 } },
   mongoose,
   ['get', 'getAll', 'add', 'update', 'replace', 'delete'],
   express,

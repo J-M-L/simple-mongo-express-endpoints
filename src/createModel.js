@@ -4,6 +4,7 @@ const createModel = (name, schema, mongoose) => {
   if (!mongoose) throw new Error('Mongoose is not defined');
 
   const mongooseSchema = new mongoose.Schema(schema);
+  mongooseSchema.statics.isValidObjectId = mongoose.Types.ObjectId.isValid;
   return mongoose.model(name, mongooseSchema);
 };
 

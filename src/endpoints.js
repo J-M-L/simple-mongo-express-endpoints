@@ -1,8 +1,11 @@
-const sanitize = require('mongo-sanitize');
+const ValidationError = require('./ValidationError');
 
-const validateIdOrThrow = (id) => {
-  if (!id) throw new Error('Id is not defined');
+const validateIdOrThrow = (id, isValidObjectId) => {
+  if (!id) throw new ValidationError('Id is not defined');
+  if (!isValidObjectId(id)) throw new ValidationError('Invalid ObjectId');
 };
+
+const sanitize = (id) => id.replace(/\$/g, '');
 
 const endpoints = {
   getAll: {
@@ -12,8 +15,10 @@ const endpoints = {
         const items = await Model.find({}).lean();
         return res.json(items);
       } catch (err) {
-        console.log(err);
-        return res.status(500).send();
+        if (err instanceof ValidationError) {
+          return res.status(400).json({ name: err.name, message: err.message });
+        }
+        return res.status(500).json('Unexpected error occurred, please try again');
       }
     },
     pathExtension: '/',
@@ -24,12 +29,16 @@ const endpoints = {
     handler: (Model) => async (req, res) => {
       try {
         const id = sanitize(req.params.id);
-        validateIdOrThrow(id);
+
+        validateIdOrThrow(id, Model.isValidObjectId);
 
         const items = await Model.findById(id).lean();
         return res.json(items);
       } catch (err) {
-        return res.status(400).json(err.message);
+        if (err instanceof ValidationError) {
+          return res.status(400).json({ name: err.name, message: err.message });
+        }
+        return res.status(500).json('Unexpected error occurred, please try again');
       }
     },
     pathExtension: '/:id',
@@ -38,14 +47,18 @@ const endpoints = {
   add: {
     name: 'add',
     handler: (Model) => async (req, res) => {
-      const { body } = req;
-      const newItem = new Model(body);
+      try {
+        const { body } = req;
+        const newItem = new Model(body);
 
-      const errors = newItem.validateSync();
-      if (errors) throw new Error('Invalid body');
-
-      const savedItem = await newItem.save();
-      return res.status(201).json(savedItem);
+        const savedItem = await newItem.save();
+        return res.status(201).json(savedItem);
+      } catch (err) {
+        if (err instanceof ValidationError) {
+          return res.status(400).json({ name: err.name, message: err.message });
+        }
+        return res.status(500).json('Unexpected error occurred, please try again');
+      }
     },
     pathExtension: '/',
     type: 'post',
@@ -53,18 +66,22 @@ const endpoints = {
   update: {
     name: 'update',
     handler: (Model) => async (req, res) => {
-      const id = sanitize(req.params.id);
-      const { body } = req;
+      try {
+        const id = sanitize(req.params.id);
+        const { body } = req;
 
-      validateIdOrThrow(id);
+        validateIdOrThrow(id, Model.isValidObjectId);
 
-      const item = await Model.findByIdAndUpdate(id, body);
+        const item = await Model.findByIdAndUpdate(id, body);
 
-      const errors = item.validateSync();
-      if (errors) throw new Error('Invalid body');
-
-      await item.save();
-      return res.json(item);
+        await item.save();
+        return res.json(item);
+      } catch (err) {
+        if (err instanceof ValidationError) {
+          return res.status(400).json({ name: err.name, message: err.message });
+        }
+        return res.status(500).json('Unexpected error occurred, please try again');
+      }
     },
     pathExtension: '/:id',
     type: 'patch',
@@ -72,18 +89,22 @@ const endpoints = {
   replace: {
     name: 'replace',
     handler: (Model) => async (req, res) => {
-      const id = sanitize(req.params.id);
-      const { body } = req;
+      try {
+        const id = sanitize(req.params.id);
+        const { body } = req;
 
-      validateIdOrThrow(id);
+        validateIdOrThrow(id, Model.isValidObjectId);
 
-      const item = await Model.findOneAndReplace(id, body);
+        const item = await Model.findOneAndReplace({ id }, body);
 
-      const errors = item.validateSync();
-      if (errors) throw new Error('Invalid body');
-
-      await item.save();
-      return res.json(item);
+        await item.save();
+        return res.json(item);
+      } catch (err) {
+        if (err instanceof ValidationError) {
+          return res.status(400).json({ name: err.name, message: err.message });
+        }
+        return res.status(500).json('Unexpected error occurred, please try again');
+      }
     },
     pathExtension: '/:id',
     type: 'put',
@@ -91,9 +112,19 @@ const endpoints = {
   delete: {
     name: 'delete',
     handler: (Model) => async (req, res) => {
-      const id = sanitize(req.params.id);
-      await Model.findByIdAndDelete(id);
-      return res.status(204).end();
+      try {
+        const id = sanitize(req.params.id);
+
+        validateIdOrThrow(id, Model.isValidObjectId);
+
+        await Model.findByIdAndDelete(id);
+        return res.status(204).end();
+      } catch (err) {
+        if (err instanceof ValidationError) {
+          return res.status(400).json({ name: err.name, message: err.message });
+        }
+        return res.status(500).json('Unexpected error occurred, please try again');
+      }
     },
     pathExtension: '/:id',
     type: 'delete',
