@@ -1,10 +1,5 @@
 const endpoints = require('./endpoints');
 
-const addEndpointToRouter = (expressRoute, model, wantedEndpoint) => {
-  const endpoint = endpoints[wantedEndpoint];
-  expressRoute[endpoint.type](endpoint.pathExtension, endpoint.handler(model));
-};
-
 const createRouter = (wantedEndpoints, express, model) => {
   if (!wantedEndpoints || !Array.isArray(wantedEndpoints)) throw new Error('Wanted Endpoints is not defined');
   if (!express) throw new Error('Express is not defined');
@@ -12,7 +7,10 @@ const createRouter = (wantedEndpoints, express, model) => {
 
   const expressRoute = express.Router();
 
-  wantedEndpoints.forEach((wantedEndpoint) => addEndpointToRouter(expressRoute, model, wantedEndpoint));
+  wantedEndpoints.forEach((wantedEndpoint) => {
+    const endpoint = endpoints[wantedEndpoint];
+    expressRoute[endpoint.type](endpoint.pathExtension, endpoint.handler(model));
+  });
   return expressRoute;
 };
 
