@@ -35,11 +35,11 @@ describe('SimpleMongoExpressEndpoints', () => {
       const { body } = await apiHandler.post('/api/test').send(data).expect(201);
       const { body: getResult } = await apiHandler.get(`/api/test/${body._id}`).expect(200);
 
-      expect(R.pick(['name', 'otherValue'], getResult)).toMatchObject(data);
+      expect(data).toMatchObject(R.pick(['name', 'otherValue'], getResult));
     });
     it('should return error when getting malformed id', async () => {
       const { body } = await apiHandler.get('/api/test/notexisting').expect(400);
-      expect(body).toMatchObject({ message: 'Invalid ObjectId', name: 'ValidationError' });
+      expect({ message: 'Invalid ObjectId', name: 'ValidationError' }).toMatchObject(body);
     });
   });
 
@@ -48,11 +48,22 @@ describe('SimpleMongoExpressEndpoints', () => {
       const data = { name: 'test', otherValue: 123 };
       const { body } = await apiHandler.post('/api/test').send(data).expect(201);
 
-      expect(R.pick(['name', 'otherValue'], body)).toMatchObject(data);
+      expect(data).toMatchObject(R.pick(['name', 'otherValue'], body));
 
       const { body: existingDBEntries } = await apiHandler.get('/api/test').send(data).expect(200);
 
-      expect(R.pick(['name', 'otherValue'], existingDBEntries[0])).toMatchObject(data);
+      expect(data).toMatchObject(R.pick(['name', 'otherValue'], existingDBEntries[0]));
+    });
+
+    it('should return validation error', async () => {
+      const data = { name: 'test', otherValue: 123 };
+      const { body } = await apiHandler.post('/api/validation').send(data).expect(400);
+
+      const expectedError = {
+        message: 'other validation failed: otherValue: Path `otherValue` (123) is more than maximum allowed value (2).',
+        name: 'ValidationError',
+      };
+      expect(expectedError).toMatchObject(body);
     });
   });
 
@@ -63,7 +74,7 @@ describe('SimpleMongoExpressEndpoints', () => {
       const { body } = await apiHandler.post('/api/test').send(data).expect(201);
 
       const { body: getResult } = await apiHandler.get(`/api/test/${body._id}`).expect(200);
-      expect(R.pick(['name', 'otherValue'], getResult)).toMatchObject(data);
+      expect(data).toMatchObject(R.pick(['name', 'otherValue'], getResult));
 
       await apiHandler.patch(`/api/test/${body._id}`).send(newValue).expect(200);
 
@@ -75,6 +86,13 @@ describe('SimpleMongoExpressEndpoints', () => {
       const { body } = await apiHandler.patch('/api/test/notExisting').send({}).expect(400);
       expect(body).toMatchObject({ message: 'Invalid ObjectId', name: 'ValidationError' });
     });
+
+    it('should return error when object does not exist', async () => {
+      const data = { name: 'test', otherValue: 1 };
+      const newValue = { otherValue: 668 };
+      const { body } = await apiHandler.post('/api/validation').send(data).expect(201);
+      await apiHandler.patch(`/api/test/${body._id}`).send(newValue).expect(500);
+    });
   });
 
   describe('replace', () => {
@@ -84,12 +102,12 @@ describe('SimpleMongoExpressEndpoints', () => {
       const { body } = await apiHandler.post('/api/test').send(data).expect(201);
 
       const { body: getResult } = await apiHandler.get(`/api/test/${body._id}`).expect(200);
-      expect(R.pick(['name', 'otherValue'], getResult)).toMatchObject(data);
+      expect(data).toMatchObject(R.pick(['name', 'otherValue'], getResult));
 
       await apiHandler.put(`/api/test/${body._id}`).send(newObject).expect(200);
 
       const { body: getResult2 } = await apiHandler.get(`/api/test/${body._id}`).expect(200);
-      expect(R.pick(['name', 'otherValue'], getResult2)).toMatchObject(newObject);
+      expect(newObject).toMatchObject(R.pick(['name', 'otherValue'], getResult2));
     });
 
     it('should return error with malformed id', async () => {
@@ -104,7 +122,7 @@ describe('SimpleMongoExpressEndpoints', () => {
       const { body } = await apiHandler.post('/api/test').send(data).expect(201);
 
       const { body: getResult } = await apiHandler.get(`/api/test/${body._id}`).expect(200);
-      expect(R.pick(['name', 'otherValue'], getResult)).toMatchObject(data);
+      expect(data).toMatchObject(R.pick(['name', 'otherValue'], getResult));
 
       await apiHandler.delete(`/api/test/${body._id}`).expect(204);
 

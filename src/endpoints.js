@@ -15,7 +15,7 @@ const endpoints = {
         const items = await Model.find({}).lean();
         return res.json(items);
       } catch (err) {
-        if (err instanceof ValidationError) {
+        if (err instanceof ValidationError || err.name === 'ValidationError') {
           return res.status(400).json({ name: err.name, message: err.message });
         }
         return res.status(500).json('Unexpected error occurred, please try again');
@@ -35,7 +35,7 @@ const endpoints = {
         const items = await Model.findById(id).lean();
         return res.json(items);
       } catch (err) {
-        if (err instanceof ValidationError) {
+        if (err instanceof ValidationError || err.name === 'ValidationError') {
           return res.status(400).json({ name: err.name, message: err.message });
         }
         return res.status(500).json('Unexpected error occurred, please try again');
@@ -54,7 +54,7 @@ const endpoints = {
         const savedItem = await newItem.save();
         return res.status(201).json(savedItem);
       } catch (err) {
-        if (err instanceof ValidationError) {
+        if (err instanceof ValidationError || err.name === 'ValidationError') {
           return res.status(400).json({ name: err.name, message: err.message });
         }
         return res.status(500).json('Unexpected error occurred, please try again');
@@ -77,7 +77,7 @@ const endpoints = {
         await item.save();
         return res.json(item);
       } catch (err) {
-        if (err instanceof ValidationError) {
+        if (err instanceof ValidationError || err.name === 'ValidationError') {
           return res.status(400).json({ name: err.name, message: err.message });
         }
         return res.status(500).json('Unexpected error occurred, please try again');
@@ -100,7 +100,7 @@ const endpoints = {
         await item.save();
         return res.json(item);
       } catch (err) {
-        if (err instanceof ValidationError) {
+        if (err instanceof ValidationError || err.name === 'ValidationError') {
           return res.status(400).json({ name: err.name, message: err.message });
         }
         return res.status(500).json('Unexpected error occurred, please try again');
@@ -120,7 +120,7 @@ const endpoints = {
         await Model.findByIdAndDelete(id);
         return res.status(204).end();
       } catch (err) {
-        if (err instanceof ValidationError) {
+        if (err instanceof ValidationError || err.name === 'ValidationError') {
           return res.status(400).json({ name: err.name, message: err.message });
         }
         return res.status(500).json('Unexpected error occurred, please try again');
