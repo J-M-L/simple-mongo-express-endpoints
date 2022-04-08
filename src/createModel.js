@@ -1,7 +1,9 @@
+const { validateInputOrThrow } = require('./validate');
+
 const createModel = (name, schema, mongoose) => {
-  if (!name) throw new Error('Name is not defined');
-  if (!schema) throw new Error('Schema is not defined');
-  if (!mongoose) throw new Error('Mongoose is not defined');
+  validateInputOrThrow('name', name, 'string');
+  validateInputOrThrow('schema', schema, 'object');
+  validateInputOrThrow('mongoose', mongoose, 'object');
 
   const mongooseSchema = new mongoose.Schema(schema);
   mongooseSchema.statics.isValidObjectId = mongoose.Types.ObjectId.isValid;

@@ -14,13 +14,13 @@ describe('createModel', () => {
         name: String,
       },
       mongoose: {},
-      errorMessage: 'Name is not defined',
+      errorMessage: 'name is not defined',
     },
     'when no schema has been given': {
       name: 'sadf',
       schema: undefined,
       mongoose: {},
-      errorMessage: 'Schema is not defined',
+      errorMessage: 'schema is not defined',
     },
     'when no mongoose has been given': {
       name: 'sadf',
@@ -28,7 +28,29 @@ describe('createModel', () => {
         name: String,
       },
       mongoose: undefined,
-      errorMessage: 'Mongoose is not defined',
+      errorMessage: 'mongoose is not defined',
+    },
+    'when name is not a string': {
+      name: ['sadf'],
+      schema: {
+        name: String,
+      },
+      mongoose: {},
+      errorMessage: 'Type of name is wrong, it should be string',
+    },
+    'when no schema is not an object': {
+      name: 'sadf',
+      schema: 'Schema',
+      mongoose: {},
+      errorMessage: 'Type of schema is wrong, it should be object',
+    },
+    'when no mongoose is not an object': {
+      name: 'sadf',
+      schema: {
+        name: String,
+      },
+      mongoose: 'model',
+      errorMessage: 'Type of mongoose is wrong, it should be object',
     },
   }))('should throw an error when %s', (testname, { name, schema, mongoose, errorMessage }) => {
     expect(() => createModel(name, schema, mongoose)).toThrow(errorMessage);
