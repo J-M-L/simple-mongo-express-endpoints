@@ -1,15 +1,25 @@
 {
-  "name": "simple-mongo-express-endpoints",
-  "version": "1.0.0",
-  "description": "",
+  "name": "@j-m-l/simple-mongo-express-endpoints",
+  "version": "1.0.2",
+  "description": "Library to ease the prototyping of a backend",
   "main": "src/index.js",
   "scripts": {
     "test.unit": "jest -c tests/jest.config.unit.js --verbose",
     "test.integration": "jest -c tests/jest.config.integration.js --runInBand --verbose",
     "test": "npm run test.unit && npm run test.integration"
   },
-  "author": "",
+  "author": "j-m-l",
   "license": "ISC",
+  "keywords": [
+    "express",
+    "mongoose",
+    "mongo",
+    "simple api",
+    "simple endpoint",
+    "prototyping",
+    "easy api",
+    "easy endpoint"
+  ],
   "devDependencies": {
     "eslint": "^8.12.0",
     "eslint-config-airbnb-base": "^15.0.0",
