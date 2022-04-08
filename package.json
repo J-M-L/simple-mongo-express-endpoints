@@ -4,8 +4,8 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "test.unit": "jest -c tests/jest.config.unit.js",
-    "test.integration": "jest -c tests/jest.config.integration.js --runInBand",
+    "test.unit": "jest -c tests/jest.config.unit.js --verbose",
+    "test.integration": "jest -c tests/jest.config.integration.js --runInBand --verbose",
     "test": "npm run test.unit && npm run test.integration"
   },
   "author": "",

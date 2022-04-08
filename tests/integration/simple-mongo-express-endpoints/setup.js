@@ -10,18 +10,18 @@ app.use(express.json());
 app.use('/api/test', SMEE(
   'test',
   { name: String, otherValue: Number },
-  mongoose,
   ['get', 'getAll', 'add', 'update', 'replace', 'delete'],
+  mongoose,
   express,
-).router);
+).Router);
 
 app.use('/api/validation', SMEE(
   'other',
   { name: String, otherValue: { type: Number, min: 1, max: 2 } },
-  mongoose,
   ['get', 'getAll', 'add', 'update', 'replace', 'delete'],
+  mongoose,
   express,
-).router);
+).Router);
 
 const server = http.createServer(app);
 
